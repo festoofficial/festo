@@ -431,7 +431,7 @@ const OrganizerDashboard = () => {
             <h2>My Events</h2>
             {organizerEvents.length > 0 ? (
               <div className="table-scroll">
-              <table style={{ marginTop: '1rem' }}>
+                <table style={{ marginTop: '1rem' }}>
                 <thead><tr><th>Name</th><th>Date</th><th>Participants</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {organizerEvents.map(event => (
@@ -439,11 +439,13 @@ const OrganizerDashboard = () => {
                       <td data-label="Name"><strong>{event.name}</strong></td>
                       <td data-label="Date">{formatDate(event.date)}</td>
                       <td data-label="Participants">{event.registered}/{event.max_participants}</td>
-                      <td>₹{event.revenue}</td>
+                      <td data-label="Revenue">?{event.revenue}</td>
                       <td data-label="Status"><span style={{ color: new Date(event.date) > new Date() ? '#10b981' : '#64748b' }}>{new Date(event.date) > new Date() ? 'Upcoming' : 'Completed'}</span></td>
-                      <td data-label="Actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <td data-label="Actions" className="actions-cell">
+                        <div className="actions-group">
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleEditEvent(event)}>Edit</button>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#ef4444', color: 'white' }} onClick={() => handleDeleteEvent(event.id)}>Delete</button>
+                      </div>
                       </td>
                     </tr>
                   ))}
@@ -459,8 +461,7 @@ const OrganizerDashboard = () => {
             <h2>Participants</h2>
             {participants.length > 0 ? (
               <div className="table-scroll">
-              <div className="table-scroll">
-              <table style={{ marginTop: '1rem' }}>
+                <table style={{ marginTop: '1rem' }}>
                 <thead><tr><th>Name</th><th>Email</th><th>Event</th><th>Date</th><th>Status</th><th>Proof</th><th>Actions</th></tr></thead>
                 <tbody>
                   {participants.map(p => (
@@ -599,12 +600,11 @@ const OrganizerDashboard = () => {
               </div>
               <div className="form-group" style={{ minWidth: '300px', flex: '1 1 360px' }}>
                 <label>Email</label>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'nowrap', alignItems: 'center', width: '100%' }}>
+                <div className="profile-email-row">
                   <input
                     type="email"
                     value={user?.email || ''}
                     disabled
-                    style={{ flex: '1 1 auto', minWidth: '260px' }}
                   />
                   <button type="button" className="btn btn-secondary" onClick={openEmailModal}>Change</button>
                 </div>
@@ -732,3 +732,4 @@ const OrganizerDashboard = () => {
 };
 
 export default OrganizerDashboard;
+
