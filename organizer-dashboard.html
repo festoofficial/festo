@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizer Dashboard - Festo</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🎓 Festo</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><span class="user-email" id="userEmail">Organizer</span></li>
+                <li><a href="#" class="btn btn-secondary" onclick="logout(); return false;">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="#dashboard" class="nav-item active" onclick="switchDashboardTab(event, 'dashboard')">
+                    <span>📊</span> Dashboard
+                </a>
+                <a href="#events" class="nav-item" onclick="switchDashboardTab(event, 'events')">
+                    <span>📅</span> My Events
+                </a>
+                <a href="#create-event" class="nav-item" onclick="switchDashboardTab(event, 'create-event')">
+                    <span>➕</span> Create Event
+                </a>
+                <a href="#participants" class="nav-item" onclick="switchDashboardTab(event, 'participants')">
+                    <span>👥</span> Participants
+                </a>
+                <a href="#revenue" class="nav-item" onclick="switchDashboardTab(event, 'revenue')">
+                    <span>💰</span> Revenue
+                </a>
+                <a href="#profile" class="nav-item" onclick="switchDashboardTab(event, 'profile')">
+                    <span>👤</span> Profile
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Dashboard Tab -->
+            <section id="dashboard" class="dashboard-tab active-tab">
+                <div class="tab-header">
+                    <h2>Dashboard Overview</h2>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-content">
+                            <h3 id="totalEvents">0</h3>
+                            <p>Total Events</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-content">
+                            <h3 id="totalRegistrations">0</h3>
+                            <p>Total Participants</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <h3 id="totalRevenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <div class="stat-content">
+                            <h3 id="upcomingEvents">0</h3>
+                            <p>Upcoming Events</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-events">
+                    <h3>Recent Events</h3>
+                    <div id="recentEventsList" class="events-list"></div>
+                </div>
+            </section>
+
+            <!-- My Events Tab -->
+            <section id="events" class="dashboard-tab">
+                <div class="tab-header">
+                    <h2>My Events</h2>
+                </div>
+                <div id="myEventsList" class="events-table-container"></div>
+            </section>
+
+            <!-- Create Event Tab -->
+            <section id="create-event" class="dashboard-tab">
+                <div class="tab-header">
+                    <h2>Create New Event</h2>
+                </div>
+                <form id="createEventForm" class="event-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventName">Event Name *</label>
+                            <input type="text" id="eventName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventCategory">Category *</label>
+                            <select id="eventCategory" required>
+                                <option value="">Select Category</option>
+                                <option value="Technology">Technology</option>
+                                <option value="Culture">Culture</option>
+                                <option value="Sports">Sports</option>
+                                <option value="Business">Business</option>
+                                <option value="Arts">Arts</option>
+                                <option value="Competition">Competition</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="eventDescription">Description *</label>
+                        <textarea id="eventDescription" rows="4" required></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventDate">Date *</label>
+                            <input type="date" id="eventDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventTime">Time *</label>
+                            <input type="time" id="eventTime" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="eventVenue">Venue *</label>
+                            <input type="text" id="eventVenue" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="eventFee">Registration Fee (₹) *</label>
+                            <input type="number" id="eventFee" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="maxParticipants">Max Participants *</label>
+                            <input type="number" id="maxParticipants" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="registrationDeadline">Registration Deadline *</label>
+                            <input type="date" id="registrationDeadline" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block">Create Event</button>
+                </form>
+            </section>
+
+            <!-- Participants Tab -->
+            <section id="participants" class="dashboard-tab">
+                <div class="tab-header">
+                    <h2>Event Participants</h2>
+                    <div class="tab-actions">
+                        <select id="eventFilter" onchange="filterParticipants()">
+                            <option value="">All Events</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="exportParticipants()">📥 Export CSV</button>
+                    </div>
+                </div>
+                <div id="participantsList" class="participants-table"></div>
+            </section>
+
+            <!-- Revenue Tab -->
+            <section id="revenue" class="dashboard-tab">
+                <div class="tab-header">
+                    <h2>Revenue Analytics</h2>
+                </div>
+                <div class="revenue-cards">
+                    <div class="revenue-card">
+                        <h3>This Month</h3>
+                        <p class="revenue-amount" id="monthRevenue">₹0</p>
+                    </div>
+                    <div class="revenue-card">
+                        <h3>Total Revenue</h3>
+                        <p class="revenue-amount" id="totalRevenueAmount">₹0</p>
+                    </div>
+                    <div class="revenue-card">
+                        <h3>Avg Per Event</h3>
+                        <p class="revenue-amount" id="avgRevenue">₹0</p>
+                    </div>
+                </div>
+                <div id="revenueList" class="revenue-breakdown"></div>
+            </section>
+
+            <!-- Profile Tab -->
+            <section id="profile" class="dashboard-tab">
+                <div class="tab-header">
+                    <h2>College Profile</h2>
+                </div>
+                <form id="profileForm" class="profile-form">
+                    <div class="form-group">
+                        <label for="collegeName">College Name</label>
+                        <input type="text" id="collegeName" value="MIT College">
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeEmail">College Email</label>
+                        <input type="email" id="collegeEmail" value="admin@mitcollege.edu">
+                    </div>
+                    <div class="form-group">
+                        <label for="collegePhone">Phone</label>
+                        <input type="tel" id="collegePhone" value="+91-9876543210">
+                    </div>
+                    <div class="form-group">
+                        <label for="collegeAddress">Address</label>
+                        <textarea id="collegeAddress" rows="3">Mumbai, Maharashtra</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Profile</button>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        function checkAuth() {
+            const user = localStorage.getItem('user');
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            const userData = JSON.parse(user);
+            if (userData.role !== 'organizer') {
+                window.location.href = 'participant-dashboard.html';
+            }
+        }
+        
+        // Check auth on page load
+        checkAuth();
+    </script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
