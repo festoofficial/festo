@@ -1,20 +1,29 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Configure email service (using Gmail example)
-// For production, use a proper email service like SendGrid, AWS SES, etc.
+// Configure email service (SMTP)
+// Use MailerSend (recommended) or any SMTP provider.
+const smtpHost = process.env.SMTP_HOST || 'smtp.mailersend.net';
+const smtpPort = Number(process.env.SMTP_PORT || 587);
+const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASSWORD;
+const smtpSecure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
+
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASSWORD || 'your-app-password'
-  }
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpSecure,
+  auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+  pool: true,
+  connectionTimeout: 15000,
+  greetingTimeout: 15000,
+  socketTimeout: 20000
 });
 
 async function sendOTPEmail(email, otp) {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'festoverify@gmail.com',
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER || 'no-reply@festo.com',
       to: email,
       subject: 'Festo - Your OTP for Signup',
       html: `
@@ -40,7 +49,7 @@ async function sendOTPEmail(email, otp) {
 async function sendEmailChangeOTP(email, otp, label) {
   try {
     const mailOptions = {
-      from: process.env.EMAIL_USER || 'festoverify@gmail.com',
+      from: process.env.EMAIL_FROM || process.env.EMAIL_USER || 'no-reply@festo.com',
       to: email,
       subject: `Festo - OTP to confirm ${label} email`,
       html: `
