@@ -382,12 +382,11 @@ const ParticipantDashboard = () => {
               </div>
               <div className="form-group" style={{ minWidth: '300px', flex: '1 1 360px' }}>
                 <label>Email</label>
-                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'nowrap', alignItems: 'center', width: '100%' }}>
+                <div className="profile-email-row">
                   <input
                     type="email"
                     value={user?.email || ''}
                     disabled
-                    style={{ flex: '1 1 auto', minWidth: '260px' }}
                   />
                   <button type="button" className="btn btn-secondary" onClick={openEmailModal}>Change</button>
                 </div>

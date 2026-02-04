@@ -624,6 +624,20 @@ body {
     .actions-group {
         justify-content: flex-end;
     }
+
+    .table-scroll tbody tr {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .table-scroll tbody td {
+        flex-wrap: wrap;
+    }
+
+    .table-scroll tbody td > *:not(:first-child) {
+        max-width: 70%;
+        text-align: right;
+    }
 }
 
 .modal-actions {
@@ -1096,6 +1110,11 @@ table tr:hover {
         gap: 0.5rem;
     }
 
+    .nav-brand h1 {
+        font-size: 1.15rem;
+        white-space: nowrap;
+    }
+
     .nav-menu {
         width: 100%;
         flex-wrap: wrap;
@@ -1121,8 +1140,7 @@ table tr:hover {
     .dashboard-sidebar.open {
         display: block;
         opacity: 1;
-        margin-left: 1rem;
-        margin-top: 0.75rem;
+        margin: 0.75rem auto;
     }
 
     .sidebar-menu {
@@ -1144,6 +1162,18 @@ table tr:hover {
     .dashboard-content {
         padding: 1.25rem;
         height: auto;
+    }
+
+    .profile-email-row {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .profile-email-row input {
+        min-width: 0;
     }
 
     .events-grid {
