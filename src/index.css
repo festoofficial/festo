@@ -636,7 +636,8 @@ body {
     white-space: nowrap;
 }
 
-.sidebar-menu a {
+.sidebar-menu a,
+.sidebar-menu button.sidebar-link {
     display: block;
     padding: 0.5rem 1rem;
     color: var(--text-light);
@@ -644,10 +645,15 @@ body {
     transition: all 0.3s ease;
     cursor: pointer;
     border-radius: 0.5rem;
+    background: none;
+    border: none;
+    font: inherit;
 }
 
 .sidebar-menu li.active a,
-.sidebar-menu a:hover {
+.sidebar-menu li.active button.sidebar-link,
+.sidebar-menu a:hover,
+.sidebar-menu button.sidebar-link:hover {
     background-color: var(--light-bg);
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
