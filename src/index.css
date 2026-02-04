@@ -650,13 +650,18 @@ body {
     font: inherit;
 }
 
-.sidebar-menu li.active a,
-.sidebar-menu li.active button.sidebar-link,
 .sidebar-menu a:hover,
 .sidebar-menu button.sidebar-link:hover {
     background-color: var(--light-bg);
     color: var(--primary-color);
     border-bottom-color: var(--primary-color);
+}
+
+.sidebar-menu li.active a,
+.sidebar-menu li.active button.sidebar-link {
+    background-color: #2b2f7a;
+    color: #ffffff;
+    border-bottom-color: #1f2460;
 }
 
 .dashboard-content {
