@@ -477,12 +477,14 @@ const OrganizerDashboard = () => {
                           '—'
                         )}
                       </td>
-                      <td style={{ display: 'flex', gap: '0.5rem' }}>
+                      <td className="actions-cell">
+                        <div className="actions-group">
                         {p.payment_status !== 'paid' && (
                           <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleApproveParticipant(p)}>Approve</button>
                         )}
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleSendEmail(p.email)}>Email</button>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#ef4444', color: 'white' }} onClick={() => handleRemoveParticipant(p.id)}>Remove</button>
+                        </div>
                       </td>
                     </tr>
                   ))}

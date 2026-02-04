@@ -552,6 +552,21 @@ body {
     color: var(--text-light);
 }
 
+.actions-cell {
+    vertical-align: top;
+}
+
+.actions-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.actions-group .btn {
+    white-space: nowrap;
+}
+
 .modal-actions {
     display: flex;
     gap: 1rem;
