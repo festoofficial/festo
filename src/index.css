@@ -567,6 +567,15 @@ body {
     white-space: nowrap;
 }
 
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table-scroll table {
+    min-width: 720px;
+}
+
 .modal-actions {
     display: flex;
     gap: 1rem;

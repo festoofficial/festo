@@ -460,6 +460,7 @@ const OrganizerDashboard = () => {
           <div style={{ background: 'white', padding: '2rem', borderRadius: '1rem' }}>
             <h2>Participants</h2>
             {participants.length > 0 ? (
+              <div className="table-scroll">
               <table style={{ marginTop: '1rem' }}>
                 <thead><tr><th>Name</th><th>Email</th><th>Event</th><th>Date</th><th>Status</th><th>Proof</th><th>Actions</th></tr></thead>
                 <tbody>
@@ -490,6 +491,7 @@ const OrganizerDashboard = () => {
                   ))}
                 </tbody>
               </table>
+              </div>
             ) : <p style={{ textAlign: 'center', color: 'var(--text-light)' }}>No participants</p>}
           </div>
         )}
