@@ -3,14 +3,17 @@ const https = require('https');
 require('dotenv').config();
 
 // Configure email service (SMTP)
-// Use MailerSend (recommended) or any SMTP provider.
+// Use Brevo API (recommended) or MailerSend API; SMTP is a fallback.
 const smtpHost = process.env.SMTP_HOST || 'smtp.mailersend.net';
 const smtpPort = Number(process.env.SMTP_PORT || 587);
 const smtpUser = process.env.SMTP_USER || process.env.EMAIL_USER;
 const smtpPass = process.env.SMTP_PASS || process.env.EMAIL_PASSWORD;
 const smtpSecure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
+
+const brevoApiKey = process.env.BREVO_API_KEY;
 const mailerSendToken = process.env.MAILERSEND_API_TOKEN;
 const emailFrom = process.env.EMAIL_FROM || process.env.EMAIL_USER || 'no-reply@festo.com';
+const emailFromName = process.env.EMAIL_FROM_NAME || 'Festo';
 
 const transporter = nodemailer.createTransport({
   host: smtpHost,
@@ -21,6 +24,41 @@ const transporter = nodemailer.createTransport({
   connectionTimeout: 15000,
   greetingTimeout: 15000,
   socketTimeout: 20000
+});
+
+const sendViaBrevoApi = (payload) => new Promise((resolve, reject) => {
+  const body = JSON.stringify(payload);
+  const req = https.request(
+    'https://api.brevo.com/v3/smtp/email',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'api-key': brevoApiKey,
+        'Content-Length': Buffer.byteLength(body)
+      },
+      timeout: 15000
+    },
+    (res) => {
+      let data = '';
+      res.on('data', (chunk) => { data += chunk; });
+      res.on('end', () => {
+        if (res.statusCode >= 200 && res.statusCode < 300) {
+          resolve({ success: true, message: 'OTP sent to your email' });
+        } else {
+          reject(new Error(`Brevo API error (${res.statusCode}): ${data}`));
+        }
+      });
+    }
+  );
+
+  req.on('error', reject);
+  req.on('timeout', () => {
+    req.destroy(new Error('Brevo API request timeout'));
+  });
+
+  req.write(body);
+  req.end();
 });
 
 const sendViaMailerSendApi = (payload) => new Promise((resolve, reject) => {
@@ -72,9 +110,17 @@ async function sendOTPEmail(email, otp) {
       <p style="color: #666; font-size: 12px;">© 2026 Festo - College Event Management Platform</p>
     `;
 
-    if (mailerSendToken) {
+    if (brevoApiKey) {
+      await sendViaBrevoApi({
+        sender: { name: emailFromName, email: emailFrom },
+        to: [{ email }],
+        subject,
+        htmlContent: html,
+        textContent: `Your OTP is ${otp}. It expires in 10 minutes.`
+      });
+    } else if (mailerSendToken) {
       await sendViaMailerSendApi({
-        from: { email: emailFrom, name: 'Festo' },
+        from: { email: emailFrom, name: emailFromName },
         to: [{ email }],
         subject,
         html,
@@ -105,9 +151,17 @@ async function sendEmailChangeOTP(email, otp, label) {
       <p style="color: #666; font-size: 12px;">© 2026 Festo - College Event Management Platform</p>
     `;
 
-    if (mailerSendToken) {
+    if (brevoApiKey) {
+      await sendViaBrevoApi({
+        sender: { name: emailFromName, email: emailFrom },
+        to: [{ email }],
+        subject,
+        htmlContent: html,
+        textContent: `Your OTP is ${otp}. It expires in 10 minutes.`
+      });
+    } else if (mailerSendToken) {
       await sendViaMailerSendApi({
-        from: { email: emailFrom, name: 'Festo' },
+        from: { email: emailFrom, name: emailFromName },
         to: [{ email }],
         subject,
         html,
