@@ -83,7 +83,7 @@ body {
 }
 
 .nav-brand h1 {
-    font-size: 1.6rem;
+    font-size: 1.9rem;
     color: var(--primary-color);
     margin: 0;
     padding: 0;
@@ -586,6 +586,12 @@ body {
     flex: 1 1 0;
     min-width: 0;
     width: 100%;
+}
+
+.profile-email-row .btn {
+    width: auto;
+    align-self: flex-start;
+    padding: 0.6rem 1.2rem;
 }
 
 .table-scroll {
@@ -1209,6 +1215,11 @@ table tr:hover {
 
     .profile-email-row input {
         min-width: 0;
+    }
+
+    .profile-email-row .btn {
+        width: fit-content;
+        align-self: flex-start;
     }
 
     .events-grid {
