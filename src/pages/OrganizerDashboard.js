@@ -439,12 +439,12 @@ const OrganizerDashboard = () => {
                 <tbody>
                   {organizerEvents.map(event => (
                     <tr key={event.id}>
-                      <td><strong>{event.name}</strong></td>
-                      <td>{formatDate(event.date)}</td>
-                      <td>{event.registered}/{event.max_participants}</td>
+                      <td data-label="Name"><strong>{event.name}</strong></td>
+                      <td data-label="Date">{formatDate(event.date)}</td>
+                      <td data-label="Participants">{event.registered}/{event.max_participants}</td>
                       <td>₹{event.revenue}</td>
-                      <td><span style={{ color: new Date(event.date) > new Date() ? '#10b981' : '#64748b' }}>{new Date(event.date) > new Date() ? 'Upcoming' : 'Completed'}</span></td>
-                      <td style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                      <td data-label="Status"><span style={{ color: new Date(event.date) > new Date() ? '#10b981' : '#64748b' }}>{new Date(event.date) > new Date() ? 'Upcoming' : 'Completed'}</span></td>
+                      <td data-label="Actions" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleEditEvent(event)}>Edit</button>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#ef4444', color: 'white' }} onClick={() => handleDeleteEvent(event.id)}>Delete</button>
                       </td>
@@ -466,19 +466,19 @@ const OrganizerDashboard = () => {
                 <tbody>
                   {participants.map(p => (
                     <tr key={p.id}>
-                      <td><strong>{p.name}</strong></td>
-                      <td>{p.email}</td>
-                      <td>{p.event_name}</td>
-                      <td>{formatDate(p.registration_date)}</td>
-                      <td><span style={{ color: p.payment_status === 'paid' ? '#10b981' : '#f59e0b' }}>{p.payment_status}</span></td>
-                      <td>
+                      <td data-label="Name"><strong>{p.name}</strong></td>
+                      <td data-label="Email">{p.email}</td>
+                      <td data-label="Event">{p.event_name}</td>
+                      <td data-label="Date">{formatDate(p.registration_date)}</td>
+                      <td data-label="Status"><span style={{ color: p.payment_status === 'paid' ? '#10b981' : '#f59e0b' }}>{p.payment_status}</span></td>
+                      <td data-label="Proof">
                         {p.payment_proof_url ? (
                           <a href={`${FILE_BASE_URL}${p.payment_proof_url}`} target="_blank" rel="noreferrer">View</a>
                         ) : (
                           '—'
                         )}
                       </td>
-                      <td className="actions-cell">
+                      <td data-label="Actions" className="actions-cell">
                         <div className="actions-group">
                         {p.payment_status !== 'paid' && (
                           <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleApproveParticipant(p)}>Approve</button>

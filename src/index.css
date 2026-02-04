@@ -576,6 +576,56 @@ body {
     min-width: 720px;
 }
 
+@media (max-width: 768px) {
+    .table-scroll {
+        overflow-x: visible;
+    }
+
+    .table-scroll table {
+        min-width: 0;
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.75rem;
+    }
+
+    .table-scroll thead {
+        display: none;
+    }
+
+    .table-scroll tbody tr {
+        display: block;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 0.75rem 1rem;
+        box-shadow: var(--shadow);
+    }
+
+    .table-scroll tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .table-scroll tbody td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-light);
+        flex: 0 0 auto;
+    }
+
+    .table-scroll tbody td:last-child {
+        border-bottom: none;
+    }
+
+    .actions-group {
+        justify-content: flex-end;
+    }
+}
+
 .modal-actions {
     display: flex;
     gap: 1rem;
