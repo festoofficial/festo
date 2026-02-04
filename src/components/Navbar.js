@@ -15,14 +15,6 @@ const Navbar = () => {
     navigate('/');
   };
 
-  const handleDashboardClick = () => {
-    if (user?.role === 'organizer') {
-      navigate('/organizer-dashboard');
-    } else if (user?.role === 'participant') {
-      navigate('/participant-dashboard');
-    }
-  };
-
   const handleScroll = (elementId) => {
     if (location.pathname === '/') {
       setTimeout(() => {
@@ -55,17 +47,9 @@ const Navbar = () => {
           {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('events'); }}>Events</button></li>}
           {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('about'); }}>About</button></li>}
           
-          {user && user.role === 'participant' && (
-            <>
-              <li><button type="button" onClick={handleDashboardClick} className={`nav-link ${isDashboard ? 'nav-active' : ''}`}>Dashboard</button></li>
-            </>
-          )}
+          {user && user.role === 'participant' && null}
 
-          {user && user.role === 'organizer' && (
-            <>
-              <li><button type="button" onClick={handleDashboardClick} className={`nav-link ${isDashboard ? 'nav-active' : ''}`}>Dashboard</button></li>
-            </>
-          )}
+          {user && user.role === 'organizer' && null}
 
           {user && (
             <li><button className="btn btn-primary" onClick={handleLogout}>Logout</button></li>

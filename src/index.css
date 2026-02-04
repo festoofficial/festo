@@ -1141,6 +1141,14 @@ table tr:hover {
         padding: 0.5rem 0.75rem;
     }
 
+    .navbar-container > div {
+        gap: 0.5rem !important;
+    }
+
+    .navbar-hamburger {
+        padding: 0 0.5rem 0 0;
+    }
+
     .nav-brand h1 {
         font-size: 1rem;
         white-space: nowrap;
@@ -1243,5 +1251,15 @@ table tr:hover {
     .btn {
         padding: 0.6rem 1rem;
         font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 1024px) and (min-width: 769px) {
+    .nav-brand h1 {
+        font-size: 1.7rem;
+    }
+
+    .event-form .form-group {
+        min-width: 0 !important;
     }
 }
