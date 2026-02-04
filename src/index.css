@@ -631,6 +631,10 @@ body {
         box-shadow: var(--shadow);
     }
 
+    .table-scroll tbody tr + tr {
+        margin-top: 1rem;
+    }
+
     .table-scroll tbody td {
         display: flex;
         justify-content: space-between;
