@@ -52,19 +52,19 @@ const Navbar = () => {
           </div>
         </div>
         <ul className="nav-menu">
-          {!user && <li><a onClick={() => navigate('/')}>Home</a></li>}
-          {!user && <li><a onClick={() => { navigate('/'); handleScroll('events'); }}>Events</a></li>}
-          {!user && <li><a onClick={() => { navigate('/'); handleScroll('about'); }}>About</a></li>}
+          {!user && <li><button type="button" className="nav-link" onClick={() => navigate('/')}>Home</button></li>}
+          {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('events'); }}>Events</button></li>}
+          {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('about'); }}>About</button></li>}
           
           {user && user.role === 'participant' && (
             <>
-              <li><a onClick={handleDashboardClick} className={isDashboard ? 'nav-active' : ''}>Dashboard</a></li>
+              <li><button type="button" onClick={handleDashboardClick} className={`nav-link ${isDashboard ? 'nav-active' : ''}`}>Dashboard</button></li>
             </>
           )}
 
           {user && user.role === 'organizer' && (
             <>
-              <li><a onClick={handleDashboardClick} className={isDashboard ? 'nav-active' : ''}>Dashboard</a></li>
+              <li><button type="button" onClick={handleDashboardClick} className={`nav-link ${isDashboard ? 'nav-active' : ''}`}>Dashboard</button></li>
             </>
           )}
 
@@ -73,7 +73,7 @@ const Navbar = () => {
           )}
 
           {!user && (
-            <li><a onClick={() => { navigate('/'); handleScroll('login'); }}>Login</a></li>
+            <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('login'); }}>Login</button></li>
           )}
         </ul>
       </div>

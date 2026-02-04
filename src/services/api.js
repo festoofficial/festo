@@ -330,9 +330,3 @@ export const authAPI = {
     }
   },
 };
-
-export default {
-  eventsAPI,
-  registrationsAPI,
-  authAPI,
-};
