@@ -52,7 +52,6 @@ const Navbar = () => {
           </div>
         </div>
         <ul className={`nav-menu ${user ? 'nav-menu--auth' : ''}`}>
-          {!user && <li><button type="button" className="nav-link" onClick={() => navigate('/')}>Home</button></li>}
           {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('events'); }}>Events</button></li>}
           {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('about'); }}>About</button></li>}
           

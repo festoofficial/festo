@@ -583,8 +583,9 @@ body {
 }
 
 .profile-email-row input {
-    flex: 1 1 auto;
-    min-width: 260px;
+    flex: 1 1 0;
+    min-width: 0;
+    width: 100%;
 }
 
 .table-scroll {
