@@ -4,6 +4,8 @@ import { useSidebar } from '../context/SidebarContext';
 import { authAPI, eventsAPI, registrationsAPI } from '../services/api';
 import { FILE_BASE_URL } from '../config';
 
+const DASHBOARD_REFRESH_MS = 10000;
+
 const ParticipantDashboard = () => {
   const { user, updateUser } = useAuth();
   const { sidebarOpen } = useSidebar();
@@ -49,11 +51,15 @@ const ParticipantDashboard = () => {
 
   // Fetch all events and user registrations
   useEffect(() => {
+    if (!user?.id) return undefined;
+
+    let cancelled = false;
+
     const fetchData = async () => {
       try {
         // Fetch all events
         const eventsData = await eventsAPI.getAll();
-        setAllEvents(eventsData.events || []);
+        if (!cancelled) setAllEvents(eventsData.events || []);
 
         // Fetch user's registrations
         if (user?.id) {
@@ -63,8 +69,10 @@ const ParticipantDashboard = () => {
           (registrationsData.registrations || []).forEach(r => {
             regMap[r.event_id] = r;
           });
-          setRegisteredEventIds(registeredIds);
-          setRegistrationsMap(regMap);
+          if (!cancelled) {
+            setRegisteredEventIds(registeredIds);
+            setRegistrationsMap(regMap);
+          }
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
@@ -73,9 +81,26 @@ const ParticipantDashboard = () => {
       }
     };
 
-    if (user?.id) {
-      fetchData();
-    }
+    fetchData();
+
+    const intervalId = setInterval(() => {
+      if (!document.hidden) fetchData();
+    }, DASHBOARD_REFRESH_MS);
+
+    const handleFocus = () => fetchData();
+    const handleVisibility = () => {
+      if (!document.hidden) fetchData();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [user?.id]);
 
   const formatDate = (dateString) => {

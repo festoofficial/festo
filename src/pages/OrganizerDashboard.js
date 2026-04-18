@@ -4,6 +4,8 @@ import { useSidebar } from '../context/SidebarContext';
 import { authAPI, eventsAPI, registrationsAPI } from '../services/api';
 import { FILE_BASE_URL } from '../config';
 
+const DASHBOARD_REFRESH_MS = 10000;
+
 const OrganizerDashboard = () => {
   const { user, updateUser } = useAuth();
   const { sidebarOpen } = useSidebar();
@@ -54,12 +56,14 @@ const OrganizerDashboard = () => {
 
   // Fetch organizer's events
   useEffect(() => {
+    if (!user?.id) return undefined;
+
+    let cancelled = false;
+
     const fetchEvents = async () => {
       try {
-        if (user?.id) {
-          const data = await eventsAPI.getByOrganizer(user.id);
-          setOrganizerEvents(data.events || []);
-        }
+        const data = await eventsAPI.getByOrganizer(user.id);
+        if (!cancelled) setOrganizerEvents(data.events || []);
       } catch (err) {
         console.error('Error fetching events:', err);
       } finally {
@@ -67,31 +71,69 @@ const OrganizerDashboard = () => {
       }
     };
 
-    if (user?.id) {
-      fetchEvents();
-    }
+    fetchEvents();
+
+    const intervalId = setInterval(() => {
+      if (!document.hidden) fetchEvents();
+    }, DASHBOARD_REFRESH_MS);
+
+    const handleFocus = () => fetchEvents();
+    const handleVisibility = () => {
+      if (!document.hidden) fetchEvents();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [user?.id]);
 
   // Fetch participants when activeTab is 'participants'
   useEffect(() => {
+    if (activeTab !== 'participants' || organizerEvents.length === 0) return undefined;
+
+    let cancelled = false;
+
     const fetchParticipants = async () => {
       try {
-        if (activeTab === 'participants' && organizerEvents.length > 0) {
-          const allParticipants = [];
-          
-          for (const event of organizerEvents) {
-            const data = await registrationsAPI.getForEvent(event.id);
-            allParticipants.push(...data.registrations || []);
-          }
-          
-          setParticipants(allParticipants);
+        const allParticipants = [];
+
+        for (const event of organizerEvents) {
+          const data = await registrationsAPI.getForEvent(event.id);
+          allParticipants.push(...data.registrations || []);
         }
+
+        if (!cancelled) setParticipants(allParticipants);
       } catch (err) {
         console.error('Error fetching participants:', err);
       }
     };
 
     fetchParticipants();
+
+    const intervalId = setInterval(() => {
+      if (!document.hidden) fetchParticipants();
+    }, DASHBOARD_REFRESH_MS);
+
+    const handleFocus = () => fetchParticipants();
+    const handleVisibility = () => {
+      if (!document.hidden) fetchParticipants();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, [activeTab, organizerEvents]);
 
   useEffect(() => {

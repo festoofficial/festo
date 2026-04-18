@@ -4,6 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import EventCard from '../components/EventCard';
 import { eventsAPI } from '../services/api';
 
+const EVENTS_REFRESH_MS = 15000;
+
 const Home = () => {
   const navigate = useNavigate();
   const { user, login, sendOTP, verifyOTPAndCreateAccount } = useAuth();
@@ -30,20 +32,39 @@ const Home = () => {
 
   // Fetch events from database
   useEffect(() => {
+    let cancelled = false;
+
     const fetchEvents = async () => {
       try {
         const data = await eventsAPI.getAll();
-        setEvents(data.events || []);
+        if (!cancelled) setEvents(data.events || []);
       } catch (err) {
         console.error('Error fetching events:', err);
         // Fall back to empty array if API fails
-        setEvents([]);
-      } finally {
-        // no-op
+        if (!cancelled) setEvents([]);
       }
     };
 
     fetchEvents();
+
+    const intervalId = setInterval(() => {
+      if (!document.hidden) fetchEvents();
+    }, EVENTS_REFRESH_MS);
+
+    const handleFocus = () => fetchEvents();
+    const handleVisibility = () => {
+      if (!document.hidden) fetchEvents();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+    };
   }, []);
 
   useEffect(() => {
