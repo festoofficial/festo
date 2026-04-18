@@ -14,7 +14,6 @@ if (shouldUseSSL) {
   const rejectUnauthorized = rejectUnauthorizedEnv === 'true' ? true : hasCA;
 
   ssl = { rejectUnauthorized };
-
   if (hasCA) {
     ssl.ca = fs.readFileSync(process.env.DB_SSL_CA, 'utf8');
   }

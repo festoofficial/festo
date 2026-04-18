@@ -38,6 +38,8 @@ const Home = () => {
         console.error('Error fetching events:', err);
         // Fall back to empty array if API fails
         setEvents([]);
+      } finally {
+        // no-op
       }
     };
 

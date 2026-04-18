@@ -47,6 +47,15 @@ npm run dev
 
 The server will start on http://localhost:5000
 
+## Monorepo Notes
+
+This repository uses a `frontend/` (React) and `backend/` (API) structure. From the repo root you can also run:
+
+```bash
+npm run install:all
+npm run backend
+```
+
 ## API Endpoints
 
 ### Authentication
