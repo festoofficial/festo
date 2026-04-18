@@ -6,14 +6,16 @@ import { FILE_BASE_URL } from '../config';
 
 const OrganizerDashboard = () => {
   const { user, updateUser } = useAuth();
-  const { sidebarOpen } = useSidebar();
+  const { sidebarOpen, setSidebarOpen } = useSidebar();
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('organizerActiveTab_' + user?.email) || 'overview';
   });
   const [organizerEvents, setOrganizerEvents] = useState([]);
   const [participants, setParticipants] = useState([]);
+  const [showAddEvent, setShowAddEvent] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [actionMessage, setActionMessage] = useState({ type: '', text: '' });
   const [profileForm, setProfileForm] = useState({ name: '', college: '', current_password: '', new_password: '' });
   const [profileMessage, setProfileMessage] = useState('');
@@ -56,14 +58,18 @@ const OrganizerDashboard = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
+        setLoading(true);
+        setError('');
+        
         if (user?.id) {
           const data = await eventsAPI.getByOrganizer(user.id);
           setOrganizerEvents(data.events || []);
         }
       } catch (err) {
         console.error('Error fetching events:', err);
+        setError('Failed to load events');
       } finally {
-        // no-op
+        setLoading(false);
       }
     };
 
@@ -145,7 +151,9 @@ const OrganizerDashboard = () => {
       setOrganizerEvents(data.events || []);
       
       setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' });
-      setQrFile(null);      setEditingEvent(null);
+      setQrFile(null);
+      setShowAddEvent(false);
+      setEditingEvent(null);
       setActiveTab('overview');
       setActionMessage({ type: 'success', text: editingEvent ? 'Event updated successfully!' : 'Event created successfully!' });
     } catch (err) {
@@ -167,7 +175,9 @@ const OrganizerDashboard = () => {
       upi_id: event.upi_id || '',
       bank_details: event.bank_details || ''
     });
-    setQrFile(null);    setActiveTab('addEvent');
+    setQrFile(null);
+    setShowAddEvent(true);
+    setActiveTab('addEvent');
   };
 
   const handleDeleteEvent = async (id) => {
@@ -212,6 +222,10 @@ const OrganizerDashboard = () => {
     } catch (err) {
       setActionMessage({ type: 'error', text: 'Error: ' + err.message });
     }
+  };
+
+  const handleSendEmail = (email) => {
+    setActionMessage({ type: 'info', text: `Email sent to ${email}` });
   };
 
   const handleProfileUpdate = async (e) => {
@@ -310,18 +324,19 @@ const OrganizerDashboard = () => {
   const totalParticipants = participants.length;
   const paidParticipants = participants.filter(p => p.payment_status === 'paid').length;
   const totalRevenue = organizerEvents.reduce((sum, event) => sum + (parseFloat(event.revenue) || 0), 0);
+  const totalPaidParticipants = organizerEvents.reduce((sum, event) => sum + (parseInt(event.registered, 10) || 0), 0);
   const upcomingEvents = organizerEvents.filter(event => new Date(event.date) > new Date()).length;
 
   return (
     <div className={`dashboard-container ${sidebarOpen ? 'sidebar-active' : ''}`}>
       <div className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'overview' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('overview'); }}>📊 Overview</button></li>
-          <li className={activeTab === 'events' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('events'); }}>📅 My Events</button></li>
-          <li className={activeTab === 'addEvent' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('addEvent'); setEditingEvent(null); setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' }); setQrFile(null); }}>➕ Add Event</button></li>
-          <li className={activeTab === 'participants' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('participants'); }}>👥 Participants</button></li>
-          <li className={activeTab === 'revenue' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('revenue'); }}>💰 Revenue</button></li>
-          <li className={activeTab === 'profile' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('profile'); }}>👤 Profile</button></li>
+          <li className={activeTab === 'overview' ? 'active' : ''}><a onClick={() => { setActiveTab('overview'); }}>📊 Overview</a></li>
+          <li className={activeTab === 'events' ? 'active' : ''}><a onClick={() => { setActiveTab('events'); }}>📅 My Events</a></li>
+          <li className={activeTab === 'addEvent' ? 'active' : ''}><a onClick={() => { setActiveTab('addEvent'); setShowAddEvent(true); setEditingEvent(null); setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' }); setQrFile(null); }}>➕ Add Event</a></li>
+          <li className={activeTab === 'participants' ? 'active' : ''}><a onClick={() => { setActiveTab('participants'); }}>👥 Participants</a></li>
+          <li className={activeTab === 'revenue' ? 'active' : ''}><a onClick={() => { setActiveTab('revenue'); }}>💰 Revenue</a></li>
+          <li className={activeTab === 'profile' ? 'active' : ''}><a onClick={() => { setActiveTab('profile'); }}>👤 Profile</a></li>
         </ul>
       </div>
 
@@ -421,7 +436,7 @@ const OrganizerDashboard = () => {
               </div>
               <div style={{ display: 'flex', gap: '1rem', gridColumn: '1 / -1' }}>
                 <button className="btn btn-primary" onClick={handleAddEvent} style={{ flex: 1 }}>{editingEvent ? 'Update' : 'Create'}</button>
-                <button className="btn btn-secondary" onClick={() => { setEditingEvent(null); setActiveTab('overview'); }} style={{ flex: 1 }}>Cancel</button>
+                <button className="btn btn-secondary" onClick={() => { setShowAddEvent(false); setEditingEvent(null); setActiveTab('overview'); }} style={{ flex: 1 }}>Cancel</button>
               </div>
           </div>
         )}
@@ -430,28 +445,24 @@ const OrganizerDashboard = () => {
           <div style={{ background: 'white', padding: '2rem', borderRadius: '1rem' }}>
             <h2>My Events</h2>
             {organizerEvents.length > 0 ? (
-              <div className="table-scroll">
-                <table style={{ marginTop: '1rem' }}>
+              <table style={{ marginTop: '1rem' }}>
                 <thead><tr><th>Name</th><th>Date</th><th>Participants</th><th>Revenue</th><th>Status</th><th>Actions</th></tr></thead>
                 <tbody>
                   {organizerEvents.map(event => (
                     <tr key={event.id}>
-                      <td data-label="Name"><strong>{event.name}</strong></td>
-                      <td data-label="Date">{formatDate(event.date)}</td>
-                      <td data-label="Participants">{event.registered}/{event.max_participants}</td>
-                      <td data-label="Revenue">?{event.revenue}</td>
-                      <td data-label="Status"><span style={{ color: new Date(event.date) > new Date() ? '#10b981' : '#64748b' }}>{new Date(event.date) > new Date() ? 'Upcoming' : 'Completed'}</span></td>
-                      <td data-label="Actions" className="actions-cell">
-                        <div className="actions-group">
+                      <td><strong>{event.name}</strong></td>
+                      <td>{formatDate(event.date)}</td>
+                      <td>{event.registered}/{event.max_participants}</td>
+                      <td>₹{event.revenue}</td>
+                      <td><span style={{ color: new Date(event.date) > new Date() ? '#10b981' : '#64748b' }}>{new Date(event.date) > new Date() ? 'Upcoming' : 'Completed'}</span></td>
+                      <td style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleEditEvent(event)}>Edit</button>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#ef4444', color: 'white' }} onClick={() => handleDeleteEvent(event.id)}>Delete</button>
-                      </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              </div>
             ) : <p style={{ textAlign: 'center', color: 'var(--text-light)' }}>No events. Click Add Event.</p>}
           </div>
         )}
@@ -460,37 +471,34 @@ const OrganizerDashboard = () => {
           <div style={{ background: 'white', padding: '2rem', borderRadius: '1rem' }}>
             <h2>Participants</h2>
             {participants.length > 0 ? (
-              <div className="table-scroll">
-                <table style={{ marginTop: '1rem' }}>
+              <table style={{ marginTop: '1rem' }}>
                 <thead><tr><th>Name</th><th>Email</th><th>Event</th><th>Date</th><th>Status</th><th>Proof</th><th>Actions</th></tr></thead>
                 <tbody>
                   {participants.map(p => (
                     <tr key={p.id}>
-                      <td data-label="Name"><strong>{p.name}</strong></td>
-                      <td data-label="Email">{p.email}</td>
-                      <td data-label="Event">{p.event_name}</td>
-                      <td data-label="Date">{formatDate(p.registration_date)}</td>
-                      <td data-label="Status"><span style={{ color: p.payment_status === 'paid' ? '#10b981' : '#f59e0b' }}>{p.payment_status}</span></td>
-                      <td data-label="Proof">
+                      <td><strong>{p.name}</strong></td>
+                      <td>{p.email}</td>
+                      <td>{p.event_name}</td>
+                      <td>{formatDate(p.registration_date)}</td>
+                      <td><span style={{ color: p.payment_status === 'paid' ? '#10b981' : '#f59e0b' }}>{p.payment_status}</span></td>
+                      <td>
                         {p.payment_proof_url ? (
                           <a href={`${FILE_BASE_URL}${p.payment_proof_url}`} target="_blank" rel="noreferrer">View</a>
                         ) : (
                           '—'
                         )}
                       </td>
-                      <td data-label="Actions" className="actions-cell">
-                        <div className="actions-group">
+                      <td style={{ display: 'flex', gap: '0.5rem' }}>
                         {p.payment_status !== 'paid' && (
                           <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleApproveParticipant(p)}>Approve</button>
                         )}
+                        <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem' }} onClick={() => handleSendEmail(p.email)}>Email</button>
                         <button className="btn btn-secondary" style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', backgroundColor: '#ef4444', color: 'white' }} onClick={() => handleRemoveParticipant(p.id)}>Remove</button>
-                        </div>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-              </div>
             ) : <p style={{ textAlign: 'center', color: 'var(--text-light)' }}>No participants</p>}
           </div>
         )}
@@ -600,11 +608,12 @@ const OrganizerDashboard = () => {
               </div>
               <div className="form-group" style={{ minWidth: '300px', flex: '1 1 360px' }}>
                 <label>Email</label>
-                <div className="profile-email-row">
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'nowrap', alignItems: 'center', width: '100%' }}>
                   <input
                     type="email"
                     value={user?.email || ''}
                     disabled
+                    style={{ flex: '1 1 auto', minWidth: '260px' }}
                   />
                   <button type="button" className="btn btn-secondary" onClick={openEmailModal}>Change</button>
                 </div>
@@ -732,4 +741,3 @@ const OrganizerDashboard = () => {
 };
 
 export default OrganizerDashboard;
-

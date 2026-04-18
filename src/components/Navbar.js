@@ -15,6 +15,14 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const handleDashboardClick = () => {
+    if (user?.role === 'organizer') {
+      navigate('/organizer-dashboard');
+    } else if (user?.role === 'participant') {
+      navigate('/participant-dashboard');
+    }
+  };
+
   const handleScroll = (elementId) => {
     if (location.pathname === '/') {
       setTimeout(() => {
@@ -28,7 +36,7 @@ const Navbar = () => {
 
   return (
     <nav className="navbar">
-      <div className="navbar-container">
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           {isDashboard && user && (
             <button 
@@ -43,20 +51,29 @@ const Navbar = () => {
             <h1 onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>🎓 Festo</h1>
           </div>
         </div>
-        <ul className={`nav-menu ${user ? 'nav-menu--auth' : ''}`}>
-          {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('events'); }}>Events</button></li>}
-          {!user && <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('about'); }}>About</button></li>}
+        <ul className="nav-menu">
+          {!user && <li><a onClick={() => navigate('/')}>Home</a></li>}
+          {!user && <li><a onClick={() => { navigate('/'); handleScroll('events'); }}>Events</a></li>}
+          {!user && <li><a onClick={() => { navigate('/'); handleScroll('about'); }}>About</a></li>}
           
-          {user && user.role === 'participant' && null}
+          {user && user.role === 'participant' && (
+            <>
+              <li><a onClick={handleDashboardClick} className={isDashboard ? 'nav-active' : ''}>Dashboard</a></li>
+            </>
+          )}
 
-          {user && user.role === 'organizer' && null}
+          {user && user.role === 'organizer' && (
+            <>
+              <li><a onClick={handleDashboardClick} className={isDashboard ? 'nav-active' : ''}>Dashboard</a></li>
+            </>
+          )}
 
           {user && (
             <li><button className="btn btn-primary" onClick={handleLogout}>Logout</button></li>
           )}
 
           {!user && (
-            <li><button type="button" className="nav-link" onClick={() => { navigate('/'); handleScroll('login'); }}>Login</button></li>
+            <li><a onClick={() => { navigate('/'); handleScroll('login'); }}>Login</a></li>
           )}
         </ul>
       </div>

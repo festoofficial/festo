@@ -8,6 +8,7 @@ const Home = () => {
   const navigate = useNavigate();
   const { user, login, sendOTP, verifyOTPAndCreateAccount } = useAuth();
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('login');
   
   // Login state
@@ -39,7 +40,7 @@ const Home = () => {
         // Fall back to empty array if API fails
         setEvents([]);
       } finally {
-        // no-op
+        setLoading(false);
       }
     };
 
@@ -305,7 +306,7 @@ const Home = () => {
                   />
                 </div>
                 <button type="submit" className="btn btn-primary btn-block">Login</button>
-                <p className="form-text">Don't have an account? <button type="button" className="link-button" onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); resetSignup(); }}>Sign up here</button></p>
+                <p className="form-text">Don't have an account? <a onClick={() => { setActiveTab('signup'); setError(''); setSuccess(''); resetSignup(); }}>Sign up here</a></p>
               </form>
             )}
 
@@ -363,7 +364,7 @@ const Home = () => {
                 <button type="submit" className="btn btn-primary btn-block" disabled={loading_signup}>
                   {loading_signup ? 'Sending OTP...' : 'Send OTP to Email'}
                 </button>
-                <p className="form-text">Already have an account? <button type="button" className="link-button" onClick={() => { setActiveTab('login'); setError(''); setSuccess(''); resetSignup(); }}>Login here</button></p>
+                <p className="form-text">Already have an account? <a onClick={() => { setActiveTab('login'); setError(''); setSuccess(''); resetSignup(); }}>Login here</a></p>
               </form>
             )}
 

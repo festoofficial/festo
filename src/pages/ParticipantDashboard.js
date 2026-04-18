@@ -6,14 +6,15 @@ import { FILE_BASE_URL } from '../config';
 
 const ParticipantDashboard = () => {
   const { user, updateUser } = useAuth();
-  const { sidebarOpen } = useSidebar();
+  const { sidebarOpen, setSidebarOpen } = useSidebar();
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('participantActiveTab_' + user?.email) || 'myEvents';
   });
   const [allEvents, setAllEvents] = useState([]);
   const [registeredEventIds, setRegisteredEventIds] = useState([]);
   const [registrationsMap, setRegistrationsMap] = useState({});
-  
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [profileForm, setProfileForm] = useState({ name: '', college: '', current_password: '', new_password: '' });
   const [profileMessage, setProfileMessage] = useState('');
   const [emailModalOpen, setEmailModalOpen] = useState(false);
@@ -51,6 +52,9 @@ const ParticipantDashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        setError('');
+        
         // Fetch all events
         const eventsData = await eventsAPI.getAll();
         setAllEvents(eventsData.events || []);
@@ -68,8 +72,9 @@ const ParticipantDashboard = () => {
         }
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
+        setError('Failed to load dashboard data');
       } finally {
-        // no-op
+        setLoading(false);
       }
     };
 
@@ -215,13 +220,13 @@ const ParticipantDashboard = () => {
       <div className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <ul className="sidebar-menu">
           <li className={activeTab === 'myEvents' ? 'active' : ''}>
-            <button type="button" className="sidebar-link" onClick={() => { setActiveTab('myEvents'); }}>📋 My Events</button>
+            <a onClick={() => { setActiveTab('myEvents'); }}>📋 My Events</a>
           </li>
           <li className={activeTab === 'browseEvents' ? 'active' : ''}>
-            <button type="button" className="sidebar-link" onClick={() => { setActiveTab('browseEvents'); }}>🔍 Browse Events</button>
+            <a onClick={() => { setActiveTab('browseEvents'); }}>🔍 Browse Events</a>
           </li>
           <li className={activeTab === 'profile' ? 'active' : ''}>
-            <button type="button" className="sidebar-link" onClick={() => { setActiveTab('profile'); }}>👤 Profile</button>
+            <a onClick={() => { setActiveTab('profile'); }}>👤 Profile</a>
           </li>
         </ul>
       </div>
@@ -382,11 +387,12 @@ const ParticipantDashboard = () => {
               </div>
               <div className="form-group" style={{ minWidth: '300px', flex: '1 1 360px' }}>
                 <label>Email</label>
-                <div className="profile-email-row">
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'nowrap', alignItems: 'center', width: '100%' }}>
                   <input
                     type="email"
                     value={user?.email || ''}
                     disabled
+                    style={{ flex: '1 1 auto', minWidth: '260px' }}
                   />
                   <button type="button" className="btn btn-secondary" onClick={openEmailModal}>Change</button>
                 </div>
