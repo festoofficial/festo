@@ -9,8 +9,13 @@ const shouldUseSSL =
 
 let ssl;
 if (shouldUseSSL) {
-  ssl = { rejectUnauthorized: true };
-  if (process.env.DB_SSL_CA) {
+  const hasCA = Boolean(process.env.DB_SSL_CA);
+  const rejectUnauthorizedEnv = String(process.env.DB_SSL_REJECT_UNAUTHORIZED || '').toLowerCase();
+  const rejectUnauthorized = rejectUnauthorizedEnv === 'true' ? true : hasCA;
+
+  ssl = { rejectUnauthorized };
+
+  if (hasCA) {
     ssl.ca = fs.readFileSync(process.env.DB_SSL_CA, 'utf8');
   }
 }
