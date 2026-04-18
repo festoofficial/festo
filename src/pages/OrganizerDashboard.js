@@ -6,16 +6,13 @@ import { FILE_BASE_URL } from '../config';
 
 const OrganizerDashboard = () => {
   const { user, updateUser } = useAuth();
-  const { sidebarOpen, setSidebarOpen } = useSidebar();
+  const { sidebarOpen } = useSidebar();
   const [activeTab, setActiveTab] = useState(() => {
     return localStorage.getItem('organizerActiveTab_' + user?.email) || 'overview';
   });
   const [organizerEvents, setOrganizerEvents] = useState([]);
   const [participants, setParticipants] = useState([]);
-  const [showAddEvent, setShowAddEvent] = useState(false);
   const [editingEvent, setEditingEvent] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [actionMessage, setActionMessage] = useState({ type: '', text: '' });
   const [profileForm, setProfileForm] = useState({ name: '', college: '', current_password: '', new_password: '' });
   const [profileMessage, setProfileMessage] = useState('');
@@ -58,18 +55,12 @@ const OrganizerDashboard = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        setLoading(true);
-        setError('');
-        
         if (user?.id) {
           const data = await eventsAPI.getByOrganizer(user.id);
           setOrganizerEvents(data.events || []);
         }
       } catch (err) {
         console.error('Error fetching events:', err);
-        setError('Failed to load events');
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -152,7 +143,6 @@ const OrganizerDashboard = () => {
       
       setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' });
       setQrFile(null);
-      setShowAddEvent(false);
       setEditingEvent(null);
       setActiveTab('overview');
       setActionMessage({ type: 'success', text: editingEvent ? 'Event updated successfully!' : 'Event created successfully!' });
@@ -176,7 +166,6 @@ const OrganizerDashboard = () => {
       bank_details: event.bank_details || ''
     });
     setQrFile(null);
-    setShowAddEvent(true);
     setActiveTab('addEvent');
   };
 
@@ -324,19 +313,18 @@ const OrganizerDashboard = () => {
   const totalParticipants = participants.length;
   const paidParticipants = participants.filter(p => p.payment_status === 'paid').length;
   const totalRevenue = organizerEvents.reduce((sum, event) => sum + (parseFloat(event.revenue) || 0), 0);
-  const totalPaidParticipants = organizerEvents.reduce((sum, event) => sum + (parseInt(event.registered, 10) || 0), 0);
   const upcomingEvents = organizerEvents.filter(event => new Date(event.date) > new Date()).length;
 
   return (
     <div className={`dashboard-container ${sidebarOpen ? 'sidebar-active' : ''}`}>
       <div className={`dashboard-sidebar ${sidebarOpen ? 'open' : ''}`}>
         <ul className="sidebar-menu">
-          <li className={activeTab === 'overview' ? 'active' : ''}><a onClick={() => { setActiveTab('overview'); }}>📊 Overview</a></li>
-          <li className={activeTab === 'events' ? 'active' : ''}><a onClick={() => { setActiveTab('events'); }}>📅 My Events</a></li>
-          <li className={activeTab === 'addEvent' ? 'active' : ''}><a onClick={() => { setActiveTab('addEvent'); setShowAddEvent(true); setEditingEvent(null); setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' }); setQrFile(null); }}>➕ Add Event</a></li>
-          <li className={activeTab === 'participants' ? 'active' : ''}><a onClick={() => { setActiveTab('participants'); }}>👥 Participants</a></li>
-          <li className={activeTab === 'revenue' ? 'active' : ''}><a onClick={() => { setActiveTab('revenue'); }}>💰 Revenue</a></li>
-          <li className={activeTab === 'profile' ? 'active' : ''}><a onClick={() => { setActiveTab('profile'); }}>👤 Profile</a></li>
+          <li className={activeTab === 'overview' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('overview'); }}>📊 Overview</button></li>
+          <li className={activeTab === 'events' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('events'); }}>📅 My Events</button></li>
+          <li className={activeTab === 'addEvent' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('addEvent'); setEditingEvent(null); setFormData({ name: '', category: '', date: '', time: '', venue: '', fee: '', max_participants: '', description: '', upi_id: '', bank_details: '' }); setQrFile(null); }}>➕ Add Event</button></li>
+          <li className={activeTab === 'participants' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('participants'); }}>👥 Participants</button></li>
+          <li className={activeTab === 'revenue' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('revenue'); }}>💰 Revenue</button></li>
+          <li className={activeTab === 'profile' ? 'active' : ''}><button type="button" className="sidebar-link" onClick={() => { setActiveTab('profile'); }}>👤 Profile</button></li>
         </ul>
       </div>
 
@@ -436,7 +424,7 @@ const OrganizerDashboard = () => {
               </div>
               <div style={{ display: 'flex', gap: '1rem', gridColumn: '1 / -1' }}>
                 <button className="btn btn-primary" onClick={handleAddEvent} style={{ flex: 1 }}>{editingEvent ? 'Update' : 'Create'}</button>
-                <button className="btn btn-secondary" onClick={() => { setShowAddEvent(false); setEditingEvent(null); setActiveTab('overview'); }} style={{ flex: 1 }}>Cancel</button>
+                <button className="btn btn-secondary" onClick={() => { setEditingEvent(null); setActiveTab('overview'); }} style={{ flex: 1 }}>Cancel</button>
               </div>
           </div>
         )}
