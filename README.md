@@ -220,6 +220,14 @@ The application includes pre-loaded sample data:
   - `CORS_ORIGIN=https://<your-cloudflare-pages-domain>` (comma-separated list supported)
 
 > Note: uploads stored under `backend/uploads/` are ephemeral on most PaaS platforms unless you add persistent storage or switch to object storage.
+
+### Initialize Database Schema (one-time)
+
+This project does not auto-create all tables on first run. After your Railway MySQL is ready and your backend variables are set:
+
+- From repo root (local machine):
+  - `npm --prefix backend install`
+  - `npm --prefix backend run init-db`
 - Video streaming for virtual events
 
 ## 📞 Support
