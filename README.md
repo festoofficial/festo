@@ -198,6 +198,28 @@ The application includes pre-loaded sample data:
 - Multi-language support
 - Dark mode toggle
 - Real-time notifications
+
+## ☁️ Deployment (Cloudflare + Railway)
+
+### Frontend (Cloudflare Pages)
+
+- Build command: `npm run build`
+- Build output directory: `build`
+- Environment variables (Cloudflare Pages → Settings → Environment variables):
+  - `REACT_APP_API_BASE_URL=https://<your-railway-backend-domain>/api`
+  - `REACT_APP_FILE_BASE_URL=https://<your-railway-backend-domain>`
+
+> SPA routing: `public/_redirects` is included for client-side routes (React Router) to work on refresh.
+
+### Backend + Database (Railway)
+
+- Deploy the repo to Railway using `railway.json` (backend-only build).
+- Add a MySQL database on Railway and set these variables in the Railway service:
+  - `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`
+  - `JWT_SECRET`
+  - `CORS_ORIGIN=https://<your-cloudflare-pages-domain>` (comma-separated list supported)
+
+> Note: uploads stored under `backend/uploads/` are ephemeral on most PaaS platforms unless you add persistent storage or switch to object storage.
 - Video streaming for virtual events
 
 ## 📞 Support
